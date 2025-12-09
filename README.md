@@ -1,4 +1,4 @@
-# Ringdle 🎵
+# Ringdle
 
 A Wordle-style game for guessing Apple ringtones. Listen to the ringtone and guess its name in 6 attempts!
 
