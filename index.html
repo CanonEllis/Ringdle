@@ -938,7 +938,7 @@
         let progressInterval = null;
 
         // Duration steps in seconds for each attempt (1st guess = 1s, 2nd = 2s, etc.)
-        const DURATION_STEPS = [1, 2, 4, 7, 11, 16];
+        const DURATION_STEPS = [.5, 1, 1.5, 2, 4, 8];
         const MAX_DURATION = 16; // Total bar length in seconds
 
         function getCurrentDuration() {
