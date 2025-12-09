@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Ringdle</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --green: #34c759;
+            --red: #ff3b30;
+            --orange: #ff9500;
+            --border: #d2d2d7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: 100dvh;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(251, 251, 253, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 400;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: color 0.2s;
+            font-family: inherit;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 40px 20px 30px;
+            background: var(--bg);
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(180deg, #42a5f5 0%, #fb8c00 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero-icon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 50%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .hero-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .hero-title {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .hero-subtitle {
+            font-size: 17px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Play Button */
+        .play-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 32px;
+        }
+
+        .wave-bar {
+            width: 3px;
+            height: 10px;
+            background: var(--border);
+            border-radius: 1.5px;
+            transition: all 0.15s ease;
+        }
+
+        .waveform.playing .wave-bar {
+            background: var(--accent);
+            animation: wave 0.6s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(2.5); }
+        }
+
+        .wave-bar:nth-child(1) { animation-delay: 0.0s; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(6) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(7) { animation-delay: 0.0s; }
+        .wave-bar:nth-child(8) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(9) { animation-delay: 0.25s; }
+        .wave-bar:nth-child(10) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(11) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(12) { animation-delay: 0.05s; }
+
+        .play-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .play-btn:active {
+            transform: scale(0.98);
+        }
+
+        .play-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .play-btn .icon-play {
+            margin-left: 3px;
+        }
+
+        .attempt-pills {
+            display: flex;
+            gap: 6px;
+        }
+
+        .attempt-pill {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s;
+        }
+
+        .attempt-pill.used {
+            background: var(--red);
+        }
+
+        .attempt-pill.correct {
+            background: var(--green);
+        }
+
+        /* Game Section */
+        .game-section {
+            background: var(--bg-secondary);
+            padding: 30px 20px 40px;
+        }
+
+        .game-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 4px;
+            letter-spacing: -0.01em;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .guess-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            min-height: 20px;
+        }
+
+        .guess-row {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .guess-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .guess-icon svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2.5;
+        }
+
+        .guess-row.correct .guess-icon {
+            background: var(--green);
+        }
+
+        .guess-row.correct .guess-icon svg {
+            stroke: white;
+        }
+
+        .guess-row.wrong .guess-icon {
+            background: #e8e8ed;
+        }
+
+        .guess-row.wrong .guess-icon svg {
+            stroke: var(--text-secondary);
+        }
+
+        .guess-row.skipped .guess-icon {
+            background: var(--orange);
+        }
+
+        .guess-row.skipped .guess-icon svg {
+            stroke: white;
+        }
+
+        .guess-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .guess-row.skipped .guess-text {
+            color: var(--text-secondary);
+        }
+
+        /* Input Area */
+        .input-area {
+            position: relative;
+        }
+
+        .autocomplete {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+            border: 1px solid var(--border);
+        }
+
+        .autocomplete.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background 0.15s;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: var(--bg-secondary);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .guess-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .guess-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .guess-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+        }
+
+        .guess-input:disabled {
+            opacity: 0.5;
+            background: var(--bg-secondary);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 980px;
+            font-size: 15px;
+            font-weight: 400;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 12px 22px;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            padding: 12px 0;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            text-decoration: underline;
+        }
+
+        .skip-row {
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 340px;
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 40px 24px 20px;
+            text-align: center;
+        }
+
+        .modal-emoji {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: -0.015em;
+        }
+
+        .modal-subtitle {
+            font-size: 17px;
+            color: var(--text-secondary);
+        }
+
+        .modal-answer {
+            background: var(--bg-secondary);
+            margin: 0 20px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .modal-answer-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+
+        .modal-answer-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--green);
+        }
+
+        .modal-stats {
+            display: flex;
+            padding: 24px 20px;
+            gap: 12px;
+        }
+
+        .stat {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-top: 2px;
+        }
+
+        .modal-actions {
+            padding: 0 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 12px;
+            border: none;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .modal-btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-btn-secondary:hover {
+            background: #e8e8ed;
+        }
+
+        /* Help Modal */
+        .help-content {
+            padding: 24px;
+        }
+
+        .help-content h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .help-content p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .help-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--text-primary);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 980px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s;
+            z-index: 300;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 734px) {
+            .hero-title {
+                font-size: 32px;
+            }
+            
+            .hero-subtitle {
+                font-size: 15px;
+            }
+
+            .hero {
+                padding: 30px 20px 24px;
+            }
+
+            .section-title {
+                font-size: 21px;
+            }
+
+            .game-section {
+                padding: 24px 20px 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-content">
+            <span class="nav-logo">Ringdle</span>
+            <div class="nav-links">
+                <button class="nav-link" id="helpBtn">How to Play</button>
+                <button class="nav-link" id="statsBtn">Statistics</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 3v18l-7-5.5H2V8.5h3L12 3zm10 9a8 8 0 0 1-3.5 6.6l-1-1.4a6 6 0 0 0 0-10.4l1-1.4A8 8 0 0 1 22 12zm-4 0a4 4 0 0 1-1.75 3.3l-1-1.4a2 2 0 0 0 0-3.8l1-1.4A4 4 0 0 1 18 12z"/>
+            </svg>
+        </div>
+        <h1 class="hero-title">Guess the ringtone.</h1>
+        <p class="hero-subtitle">Listen carefully. You have 6 attempts.</p>
+        
+        <div class="play-section">
+            <div class="waveform" id="waveform">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+            
+            <button class="play-btn" id="playBtn" aria-label="Play">
+                <svg class="icon-play" viewBox="0 0 24 24" id="playIcon">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+
+            <div class="attempt-pills" id="attemptDots">
+                <div class="attempt-pill"></div>
+                <div class="attempt-pill"></div>
+                <div class="attempt-pill"></div>
+                <div class="attempt-pill"></div>
+                <div class="attempt-pill"></div>
+                <div class="attempt-pill"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Section -->
+    <section class="game-section">
+        <div class="game-container">
+            <h2 class="section-title">Your guesses</h2>
+            <p class="section-subtitle">Select a ringtone from the list below.</p>
+
+            <div class="guess-list" id="guessList"></div>
+
+            <div class="input-area">
+                <div class="autocomplete" id="autocomplete"></div>
+                <div class="input-row">
+                    <input 
+                        type="text" 
+                        class="guess-input" 
+                        id="guessInput" 
+                        placeholder="Type a ringtone name..."
+                        autocomplete="off"
+                        autocapitalize="off"
+                        autocorrect="off"
+                        spellcheck="false"
+                    >
+                    <button class="btn btn-primary" id="submitBtn">Guess</button>
+                </div>
+                <div class="skip-row">
+                    <button class="btn btn-secondary" id="skipBtn">Skip this round</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Result Modal -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-emoji" id="resultEmoji">🎉</div>
+                <div class="modal-title" id="resultTitle">Nice!</div>
+                <div class="modal-subtitle" id="resultSubtitle">You got it in 3 tries</div>
+            </div>
+            <div class="modal-answer">
+                <div class="modal-answer-label">The answer was</div>
+                <div class="modal-answer-text" id="resultAnswer">Marimba</div>
+            </div>
+            <div class="modal-stats">
+                <div class="stat">
+                    <div class="stat-value" id="statPlayed">0</div>
+                    <div class="stat-label">Played</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statWinRate">0%</div>
+                    <div class="stat-label">Win %</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statStreak">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" id="shareBtn">Share Result</button>
+                <button class="modal-btn modal-btn-secondary" id="playAgainBtn">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">How to Play</div>
+            </div>
+            <div class="help-content">
+                <h3>Listen</h3>
+                <p>Tap the play button to hear the mystery ringtone. You can listen as many times as you like.</p>
+                
+                <h3>Guess</h3>
+                <p>Type a ringtone name and select from the suggestions. Each guess uses one of your 6 attempts.</p>
+                
+                <h3>Win</h3>
+                <p>Guess correctly to win. Use Skip if you're stuck, but it still counts as an attempt.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" id="closeHelpBtn">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal-overlay" id="statsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Your Statistics</div>
+            </div>
+            <div class="modal-stats">
+                <div class="stat">
+                    <div class="stat-value" id="statPlayed2">0</div>
+                    <div class="stat-label">Played</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statWon">0</div>
+                    <div class="stat-label">Won</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statWinRate2">0%</div>
+                    <div class="stat-label">Win %</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statStreak2">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" id="closeStatsBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Copied to clipboard</div>
+
+    <audio id="audio" preload="auto"></audio>
+
+    <script>
+        const RINGTONES = [
+            "Journey","Dollop","Departure","Daybreak","Chirp",
+            "Chalet","Canopy","Breaking","Arpeggio","Reflection"
+        
+        ];
+
+        // State
+        let answer = '';
+        let guesses = [];
+        let gameOver = false;
+        let playing = false;
+        let selectedIdx = -1;
+
+        // Elements
+        const $ = id => document.getElementById(id);
+        const playBtn = $('playBtn');
+        const playIcon = $('playIcon');
+        const waveform = $('waveform');
+        const guessInput = $('guessInput');
+        const submitBtn = $('submitBtn');
+        const skipBtn = $('skipBtn');
+        const autocomplete = $('autocomplete');
+        const guessList = $('guessList');
+        const attemptDots = $('attemptDots').children;
+        const audio = $('audio');
+        const toast = $('toast');
+
+        // Modals
+        const resultModal = $('resultModal');
+        const helpModal = $('helpModal');
+        const statsModal = $('statsModal');
+
+        // Stats
+        const getStats = () => JSON.parse(localStorage.getItem('ringdle_stats') || '{"played":0,"won":0,"streak":0}');
+        const saveStats = s => localStorage.setItem('ringdle_stats', JSON.stringify(s));
+
+        // Init
+        function init() {
+            answer = RINGTONES[Math.floor(Math.random() * RINGTONES.length)];
+            guesses = [];
+            gameOver = false;
+            guessList.innerHTML = '';
+            guessInput.value = '';
+            guessInput.disabled = false;
+            submitBtn.disabled = false;
+            skipBtn.disabled = false;
+            Array.from(attemptDots).forEach(d => d.className = 'attempt-pill');
+            resultModal.classList.remove('show');
+            
+            audio.src = `audio/${answer.toLowerCase().replace(/\s+/g, '_')}.m4a`;
+            console.log('Answer:', answer);
+        }
+
+        // Audio
+        playBtn.onclick = () => {
+            if (playing) {
+                audio.pause();
+                audio.currentTime = 0;
+            } else {
+                audio.play().catch(() => showToast('Add audio files to play'));
+            }
+        };
+
+        audio.onplay = () => {
+            playing = true;
+            waveform.classList.add('playing');
+            playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>';
+            playIcon.classList.remove('icon-play');
+        };
+
+        audio.onpause = audio.onended = () => {
+            playing = false;
+            waveform.classList.remove('playing');
+            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            playIcon.classList.add('icon-play');
+        };
+
+        // Autocomplete
+        guessInput.oninput = e => {
+            const v = e.target.value.toLowerCase();
+            selectedIdx = -1;
+            
+            if (!v) {
+                autocomplete.classList.remove('show');
+                return;
+            }
+
+            const matches = RINGTONES.filter(r => 
+                r.toLowerCase().includes(v) && !guesses.some(g => g.name === r)
+            );
+
+            if (!matches.length) {
+                autocomplete.classList.remove('show');
+                return;
+            }
+
+            autocomplete.innerHTML = matches.map(r => 
+                `<div class="autocomplete-item" data-name="${r}">${r}</div>`
+            ).join('');
+            autocomplete.classList.add('show');
+        };
+
+        guessInput.onkeydown = e => {
+            const items = autocomplete.querySelectorAll('.autocomplete-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIdx = Math.min(selectedIdx + 1, items.length - 1);
+                items.forEach((it, i) => it.classList.toggle('selected', i === selectedIdx));
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIdx = Math.max(selectedIdx - 1, 0);
+                items.forEach((it, i) => it.classList.toggle('selected', i === selectedIdx));
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIdx >= 0 && items[selectedIdx]) {
+                    guessInput.value = items[selectedIdx].dataset.name;
+                }
+                autocomplete.classList.remove('show');
+                submitGuess();
+            } else if (e.key === 'Escape') {
+                autocomplete.classList.remove('show');
+            }
+        };
+
+        autocomplete.onclick = e => {
+            if (e.target.classList.contains('autocomplete-item')) {
+                guessInput.value = e.target.dataset.name;
+                autocomplete.classList.remove('show');
+                submitGuess();
+            }
+        };
+
+        document.onclick = e => {
+            if (!e.target.closest('.input-area')) autocomplete.classList.remove('show');
+        };
+
+        // Submit
+        submitBtn.onclick = submitGuess;
+
+        function submitGuess() {
+            if (gameOver) return;
+            
+            const guess = guessInput.value.trim();
+            const match = RINGTONES.find(r => r.toLowerCase() === guess.toLowerCase());
+            
+            if (!match) {
+                showToast('Select a ringtone from the list');
+                return;
+            }
+
+            if (guesses.some(g => g.name === match)) {
+                showToast('Already guessed');
+                return;
+            }
+
+            const correct = match === answer;
+            guesses.push({ name: match, correct, skipped: false });
+            
+            addGuessRow(match, correct, false);
+            updateDots();
+            guessInput.value = '';
+
+            if (correct) endGame(true);
+            else if (guesses.length >= 6) endGame(false);
+        }
+
+        // Skip
+        skipBtn.onclick = () => {
+            if (gameOver) return;
+            guesses.push({ name: 'Skipped', correct: false, skipped: true });
+            addGuessRow('Skipped', false, true);
+            updateDots();
+            if (guesses.length >= 6) endGame(false);
+        };
+
+        function addGuessRow(name, correct, skipped) {
+            const row = document.createElement('div');
+            row.className = `guess-row ${correct ? 'correct' : skipped ? 'skipped' : 'wrong'}`;
+            
+            const icon = correct 
+                ? '<path d="M20 6L9 17l-5-5"/>' 
+                : skipped 
+                    ? '<path d="M5 12h14M12 5l7 7-7 7"/>' 
+                    : '<path d="M18 6L6 18M6 6l12 12"/>';
+            
+            row.innerHTML = `
+                <div class="guess-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${icon}</svg>
+                </div>
+                <span class="guess-text">${name}</span>
+            `;
+            guessList.appendChild(row);
+        }
+
+        function updateDots() {
+            guesses.forEach((g, i) => {
+                attemptDots[i].classList.add(g.correct ? 'correct' : 'used');
+            });
+        }
+
+        function endGame(won) {
+            gameOver = true;
+            guessInput.disabled = true;
+            submitBtn.disabled = true;
+            skipBtn.disabled = true;
+            audio.pause();
+
+            const stats = getStats();
+            stats.played++;
+            if (won) {
+                stats.won++;
+                stats.streak++;
+            } else {
+                stats.streak = 0;
+            }
+            saveStats(stats);
+
+            showResult(won, stats);
+        }
+
+        function showResult(won, stats) {
+            const n = guesses.length;
+            
+            $('resultEmoji').textContent = won ? (n <= 2 ? '🎯' : n <= 4 ? '🎉' : '😅') : '😔';
+            $('resultTitle').textContent = won ? (n === 1 ? 'Perfect!' : n <= 3 ? 'Excellent!' : 'Nice!') : 'Better luck next time';
+            $('resultSubtitle').textContent = won ? `You got it in ${n} ${n === 1 ? 'try' : 'tries'}` : 'You ran out of attempts';
+            $('resultAnswer').textContent = answer;
+            
+            $('statPlayed').textContent = stats.played;
+            $('statWinRate').textContent = Math.round((stats.won / stats.played) * 100) + '%';
+            $('statStreak').textContent = stats.streak;
+
+            setTimeout(() => resultModal.classList.add('show'), 400);
+        }
+
+        // Share
+        $('shareBtn').onclick = () => {
+            const won = guesses.some(g => g.correct);
+            const squares = guesses.map(g => g.correct ? '🟩' : g.skipped ? '🟨' : '⬛').join('');
+            const text = `Ringdle ${won ? guesses.length : 'X'}/6\n${squares}`;
+            
+            navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+        };
+
+        // Play again
+        $('playAgainBtn').onclick = init;
+
+        // Help modal
+        $('helpBtn').onclick = () => helpModal.classList.add('show');
+        $('closeHelpBtn').onclick = () => helpModal.classList.remove('show');
+        helpModal.onclick = e => { if (e.target === helpModal) helpModal.classList.remove('show'); };
+
+        // Stats modal
+        $('statsBtn').onclick = () => {
+            const s = getStats();
+            $('statPlayed2').textContent = s.played;
+            $('statWon').textContent = s.won;
+            $('statWinRate2').textContent = s.played ? Math.round((s.won / s.played) * 100) + '%' : '0%';
+            $('statStreak2').textContent = s.streak;
+            statsModal.classList.add('show');
+        };
+        $('closeStatsBtn').onclick = () => statsModal.classList.remove('show');
+        statsModal.onclick = e => { if (e.target === statsModal) statsModal.classList.remove('show'); };
+
+        // Result modal close
+        resultModal.onclick = e => { if (e.target === resultModal) resultModal.classList.remove('show'); };
+
+        // Toast
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
