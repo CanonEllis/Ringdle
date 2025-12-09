@@ -855,10 +855,29 @@
 
     <script>
         const RINGTONES = [
-            "Journey","Dollop","Departure","Daybreak","Chirp",
-            "Chalet","Canopy","Breaking","Arpeggio","Reflection"
-        
+            "Alarm", "Apex", "arpeggio", "Ascending", "Bark", "Beacon",
+            "Bell Tower", "Blues", "Boing", "breaking", "Bulletin", "By The Seaside",
+            "canopy", "chalet", "Chimes", "chirp", "Circuit", "Constellation", 
+            "Cosmic", "Crickets", "Crystals", "daybreak", "departure", "Digital", 
+            "dollop", "Doorbell", "Duck", "Harp", "Hillside", "Illuminate", 
+            "journey", "Marimba", "Motorcycle", "Night Owl", "Old Car Horn", 
+            "Old Phone", "Opening", "Piano Riff", "Pinball", "Playtime", 
+            "Presto", "Radar", "Radiate", "reflection", "Reflection", "Ripples", 
+            "Robot", "Sci-Fi", "Sencha", "Signal", "Silk", "Slow Rise", 
+            "Sonar", "Stargaze", "Strum", "Summit", "Timba", "Time Passing", 
+            "Trill", "Twinkle", "Uplift", "Waves", "Xylophone"
         ];
+
+        // Files that use .m4a extension (all others use .m4r)
+        const M4A_FILES = [
+            "arpeggio", "breaking", "canopy", "chalet", "chirp", 
+            "daybreak", "departure", "dollop", "journey", "reflection"
+        ];
+
+        function getAudioPath(name) {
+            const ext = M4A_FILES.includes(name) ? 'm4a' : 'm4r';
+            return `audio/${encodeURIComponent(name)}.${ext}`;
+        }
 
         // State
         let answer = '';
@@ -903,7 +922,7 @@
             Array.from(attemptDots).forEach(d => d.className = 'attempt-pill');
             resultModal.classList.remove('show');
             
-            audio.src = `audio/${answer.toLowerCase().replace(/\s+/g, '_')}.m4a`;
+            audio.src = getAudioPath(answer);
             console.log('Answer:', answer);
         }
 
