@@ -241,6 +241,49 @@
             background: var(--green);
         }
 
+        /* Duration Bar */
+        .duration-bar {
+            width: 200px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .duration-unlocked {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--accent);
+            opacity: 0.3;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .duration-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .duration-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .duration-label span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
         /* Game Section */
         .game-section {
             background: var(--bg-secondary);
@@ -699,7 +742,7 @@
             </svg>
         </div>
         <h1 class="hero-title">Guess the ringtone.</h1>
-        <p class="hero-subtitle">Listen carefully. You have 6 attempts.</p>
+        <p class="hero-subtitle">Start with 1 second. Wrong guesses unlock more.</p>
         
         <div class="play-section">
             <div class="waveform" id="waveform">
@@ -716,6 +759,12 @@
                 <div class="wave-bar"></div>
                 <div class="wave-bar"></div>
             </div>
+
+            <div class="duration-bar">
+                <div class="duration-progress" id="durationProgress"></div>
+                <div class="duration-unlocked" id="durationUnlocked"></div>
+            </div>
+            <div class="duration-label"><span id="durationText">1s</span> unlocked</div>
             
             <button class="play-btn" id="playBtn" aria-label="Play">
                 <svg class="icon-play" viewBox="0 0 24 24" id="playIcon">
@@ -805,13 +854,13 @@
             </div>
             <div class="help-content">
                 <h3>Listen</h3>
-                <p>Tap the play button to hear the mystery ringtone. You can listen as many times as you like.</p>
+                <p>Tap play to hear a short clip of the mystery ringtone. You start with just 1 second!</p>
                 
-                <h3>Guess</h3>
-                <p>Type a ringtone name and select from the suggestions. Each guess uses one of your 6 attempts.</p>
+                <h3>Guess or Skip</h3>
+                <p>Make your guess or skip to unlock more of the track. Each attempt reveals more: 1s → 2s → 4s → 7s → 11s → 16s.</p>
                 
                 <h3>Win</h3>
-                <p>Guess correctly to win. Use Skip if you're stuck, but it still counts as an attempt.</p>
+                <p>Guess correctly in 6 attempts to win. The earlier you guess, the better!</p>
             </div>
             <div class="modal-actions">
                 <button class="modal-btn modal-btn-primary" id="closeHelpBtn">Got it</button>
@@ -862,7 +911,7 @@
             "Dollop", "Doorbell", "Duck", "Harp", "Hillside", "Illuminate", 
             "Journey", "Marimba", "Motorcycle", "Night Owl", "Old Car Horn", 
             "Old Phone", "Opening", "Piano Riff", "Pinball", "Playtime", 
-            "Presto", "Radar", "Radiate", "Reflection", "Reflection", "Ripples", 
+            "Presto", "Radar", "Radiate", "Reflection", "Ripples", 
             "Robot", "Sci-Fi", "Sencha", "Signal", "Silk", "Slow Rise", 
             "Sonar", "Stargaze", "Strum", "Summit", "Timba", "Time Passing", 
             "Trill", "Twinkle", "Uplift", "Waves", "Xylophone"
@@ -885,6 +934,16 @@
         let gameOver = false;
         let playing = false;
         let selectedIdx = -1;
+        let playTimeout = null;
+        let progressInterval = null;
+
+        // Duration steps in seconds for each attempt (1st guess = 1s, 2nd = 2s, etc.)
+        const DURATION_STEPS = [1, 2, 4, 7, 11, 16];
+        const MAX_DURATION = 16; // Total bar length in seconds
+
+        function getCurrentDuration() {
+            return DURATION_STEPS[Math.min(guesses.length, DURATION_STEPS.length - 1)];
+        }
 
         // Elements
         const $ = id => document.getElementById(id);
@@ -899,6 +958,9 @@
         const attemptDots = $('attemptDots').children;
         const audio = $('audio');
         const toast = $('toast');
+        const durationProgress = $('durationProgress');
+        const durationUnlocked = $('durationUnlocked');
+        const durationText = $('durationText');
 
         // Modals
         const resultModal = $('resultModal');
@@ -924,23 +986,62 @@
             
             audio.src = getAudioPath(answer);
             console.log('Answer:', answer);
+
+            // Reset duration display
+            updateDurationDisplay();
+        }
+
+        function updateDurationDisplay() {
+            const duration = getCurrentDuration();
+            const percentage = (duration / MAX_DURATION) * 100;
+            durationUnlocked.style.width = percentage + '%';
+            durationText.textContent = duration + 's';
+            durationProgress.style.width = '0%';
+        }
+
+        function updateProgressBar() {
+            const duration = getCurrentDuration();
+            const currentTime = audio.currentTime;
+            const percentage = Math.min((currentTime / duration) * (duration / MAX_DURATION) * 100, (duration / MAX_DURATION) * 100);
+            durationProgress.style.width = percentage + '%';
         }
 
         // Audio
         playBtn.onclick = () => {
             if (playing) {
-                audio.pause();
-                audio.currentTime = 0;
+                stopPlayback();
             } else {
+                audio.currentTime = 0;
                 audio.play().catch(() => showToast('Add audio files to play'));
             }
         };
+
+        function stopPlayback() {
+            audio.pause();
+            audio.currentTime = 0;
+            clearTimeout(playTimeout);
+            clearInterval(progressInterval);
+            durationProgress.style.width = '0%';
+        }
 
         audio.onplay = () => {
             playing = true;
             waveform.classList.add('playing');
             playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>';
             playIcon.classList.remove('icon-play');
+
+            // Set up duration limit (only if game not over)
+            if (!gameOver) {
+                const duration = getCurrentDuration();
+                clearTimeout(playTimeout);
+                playTimeout = setTimeout(() => {
+                    stopPlayback();
+                }, duration * 1000);
+
+                // Update progress bar
+                clearInterval(progressInterval);
+                progressInterval = setInterval(updateProgressBar, 50);
+            }
         };
 
         audio.onpause = audio.onended = () => {
@@ -948,6 +1049,8 @@
             waveform.classList.remove('playing');
             playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
             playIcon.classList.add('icon-play');
+            clearTimeout(playTimeout);
+            clearInterval(progressInterval);
         };
 
         // Autocomplete
@@ -1038,6 +1141,7 @@
 
             if (correct) endGame(true);
             else if (guesses.length >= 6) endGame(false);
+            else updateDurationDisplay(); // Unlock more audio on wrong guess
         }
 
         // Skip
@@ -1047,6 +1151,7 @@
             addGuessRow('Skipped', false, true);
             updateDots();
             if (guesses.length >= 6) endGame(false);
+            else updateDurationDisplay(); // Unlock more audio on skip
         };
 
         function addGuessRow(name, correct, skipped) {
@@ -1079,7 +1184,11 @@
             guessInput.disabled = true;
             submitBtn.disabled = true;
             skipBtn.disabled = true;
-            audio.pause();
+            stopPlayback();
+
+            // Unlock full track
+            durationUnlocked.style.width = '100%';
+            durationText.textContent = 'Full';
 
             const stats = getStats();
             stats.played++;
